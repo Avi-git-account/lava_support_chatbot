@@ -17,7 +17,7 @@ const LavaSupportChatbot = () => {
     message: ""
   });
 
-  /* ================= FETCH QUESTIONS ================= */
+  
   const fetchQuestions = async () => {
     try {
       const res = await fetch(`${BASE_URL}/api/chatbot/questions`);
@@ -33,7 +33,7 @@ const LavaSupportChatbot = () => {
     }
   };
 
-  /* ================= FETCH ANSWERS ================= */
+  
   const fetchAnswers = async (questionId) => {
     setSelectedQuestion(questionId);
     try {
@@ -48,7 +48,7 @@ const LavaSupportChatbot = () => {
     }
   };
 
-  /* ================= FEEDBACK ================= */
+  
   const submitFeedback = async (wasHelpful) => {
     try {
       await fetch(`${BASE_URL}/api/feedback`, {
@@ -68,13 +68,13 @@ const LavaSupportChatbot = () => {
     }
   };
 
-  /* ================= HANDLE FORM SUBMIT ================= */
+  
   const handleFormSubmit = () => {
     if (!formData.name || !formData.email || !formData.message) {
       alert("Please fill in all required fields");
       return;
     }
-    // Here you can add API call to submit the form
+    
     alert("Message sent successfully!");
     setFormData({ name: "", email: "", phone: "", message: "" });
     setCurrentView("welcome");
@@ -107,12 +107,12 @@ const LavaSupportChatbot = () => {
 
   return (
     <>
-      {/* CHATBOT ICON */}
+      
       <div style={styles.chatIcon} onClick={() => setIsOpen(true)}>
         <MessageCircle size={28} color="white" />
       </div>
 
-      {/* CHATBOT WINDOW */}
+      
       {isOpen && (
         <div style={styles.chatbot}>
           {/* HEADER */}
@@ -133,9 +133,9 @@ const LavaSupportChatbot = () => {
             </button>
           </div>
 
-          {/* BODY */}
+         
           <div style={styles.body}>
-            {/* WELCOME VIEW */}
+            
             {currentView === "welcome" && (
               <div style={styles.welcomeView}>
                 <h2 style={styles.welcomeTitle}>Hello there!</h2>
@@ -172,7 +172,7 @@ const LavaSupportChatbot = () => {
               </div>
             )}
 
-            {/* CATEGORIES VIEW */}
+            
             {currentView === "categories" && (
               <div style={styles.categoriesView}>
                 <div style={styles.searchBar}>
@@ -197,7 +197,7 @@ const LavaSupportChatbot = () => {
               </div>
             )}
 
-            {/* QUESTION LIST VIEW */}
+            
             {currentView === "questionList" && (
               <div style={styles.questionListView}>
                 <div style={styles.searchBar}>
@@ -321,7 +321,7 @@ const LavaSupportChatbot = () => {
               </div>
             )}
 
-            {/* FEEDBACK VIEW */}
+            
             {currentView === "feedback" && (
               <div style={styles.feedbackView}>
                 <div style={styles.feedbackSuccess}>
@@ -352,7 +352,7 @@ const LavaSupportChatbot = () => {
   );
 };
 
-/* ================= STYLES ================= */
+
 const styles = {
   chatIcon: {
     position: "fixed",
