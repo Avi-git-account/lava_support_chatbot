@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { X, Search, FileText, ChevronLeft, ExternalLink } from 'lucide-react';
 
 const HelpdeskForm = ({ onClose, onSubmit }) => {
@@ -121,15 +121,37 @@ const LavaSupportChatbot = () => {
   const [showForm, setShowForm] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
+  const [questions, setQuestions] = useState([]);
   const [showFeedbackAnimation, setShowFeedbackAnimation] = useState(false);
 
-  const questions = [
+/*   const questions = [
     { id: 1, q: "My phone is not switching ON", a: "Step 1 - Clean the charging port using a dry brush to remove dust.\nStep 2 - Charge the phone for 15-30 minutes with a working cable & charger.\nStep 3 - Hard reset the phone (Power + Volume Down)." },
     { id: 2, q: "My phone is hanging/freezing frequently", a: "Step 1 – Clear phone storage by removing unwanted data.\nStep 2 – Clear application cache data.\nStep 3 - Update all applications from Play Store.\nStep 4 – Frequently close running apps.\nStep 5 – Reset app preferences.\nStep 6 – Update device software.\nStep 7 – Factory data reset (backup first)." },
     { id: 3, q: "Apps not downloading from Play Store", a: "Step 1 – Clear Play Store cache data.\nStep 2 - Update all applications from Play Store." },
     { id: 4, q: "My phone is overheating", a: "Step 1 – Clear phone storage.\nStep 2 - Update all applications.\nStep 3 – Use model-specific adaptor and cable.\nStep 4 – Reset app preferences.\nStep 5 – Update device software.\nStep 6 – Factory reset (backup first)." },
     { id: 5, q: "Slow charging issue", a: "Step 1 – Use model-specific adaptor and cable.\nStep 2 – Check if phone supports fast charging.\nStep 3 – Check for fast-charging icon on screen." }
   ];
+ */
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch("http://192.168.114.60:8082/api/chatbot/questions");
+        const data = await response.json();
+        const formattedQuestions = data.map(item => ({
+          id: item[0],
+          q: item[1],
+          a: "Answer not available yet." 
+        }));
+
+        setQuestions(formattedQuestions);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const handleFeedback = (type) => {
     setFeedback(type);
