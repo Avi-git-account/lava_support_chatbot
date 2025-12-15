@@ -1,4 +1,4 @@
-import LavaSupportChatbot from './components/LavaSupportChatbot';
+import LavaSupportChatbot from "./components/LavaSupportChatbot";
 
 function App() {
   return <LavaSupportChatbot />;
