@@ -10,7 +10,7 @@ const LavaSupportChatbot = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [viewHistory, setViewHistory] = useState([]);
+  // const [viewHistory, setViewHistory] = useState([]);
 
   const [feedbackType, setFeedbackType] = useState(null);
   const [formData, setFormData] = useState({
@@ -113,15 +113,15 @@ const LavaSupportChatbot = () => {
 
 
 
-  const handleFormSubmit = () => {
-    if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill in all required fields");
-      return;
-    }
-    alert("Message sent successfully!");
-    setFormData({ name: "", email: "", phone: "", message: "" });
-    setCurrentView("welcome");
-  };
+  // const handleFormSubmit = () => {
+  //   if (!formData.name || !formData.email || !formData.message) {
+  //     alert("Please fill in all required fields");
+  //     return;
+  //   }
+  //   alert("Message sent successfully!");
+  //   setFormData({ name: "", email: "", phone: "", message: "" });
+  //   setCurrentView("welcome");
+  // };
 
   useEffect(() => {
     if (isOpen && currentView === "questionList") {
@@ -321,27 +321,27 @@ const LavaSupportChatbot = () => {
 
                   <input
                     style={styles.input}
-                    name="course"
-                    placeholder="Course"
-                    value={ticketData.course}
+                    name="Phone Number"
+                    placeholder="Number"
+                    value={ticketData.phone}
                     onChange={handleTicketChange}
                   />
 
-                  <input
+                  {/* <input
                     style={styles.input}
                     name="queryType"
                     placeholder="Query Type"
                     value={ticketData.queryType}
                     onChange={handleTicketChange}
-                  />
+                  /> */}
 
-                  <input
+                  {/* <input
                     style={styles.input}
                     name="subject"
                     placeholder="Your Query *"
                     value={ticketData.subject}
                     onChange={handleTicketChange}
-                  />
+                  /> */}
 
                   <textarea
                     style={styles.textarea}
@@ -394,27 +394,27 @@ const LavaSupportChatbot = () => {
 
                   <input
                     style={styles.input}
-                    name="course"
-                    placeholder="Course"
-                    value={ticketData.course}
+                    name="Phone number"
+                    placeholder="Number"
+                    value={ticketData.phone}
                     onChange={handleTicketChange}
                   />
 
-                  <input
+                  {/* <input
                     style={styles.input}
                     name="queryType"
                     placeholder="Query Type"
                     value={ticketData.queryType}
                     onChange={handleTicketChange}
-                  />
+                  /> */}
 
-                  <input
+                  {/* <input
                     style={styles.input}
                     name="subject"
                     placeholder="Your Query *"
                     value={ticketData.subject}
                     onChange={handleTicketChange}
-                  />
+                  /> */}
 
                   <textarea
                     style={styles.textarea}
