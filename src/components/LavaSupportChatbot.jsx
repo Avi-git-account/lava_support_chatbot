@@ -220,17 +220,7 @@ const LavaSupportChatbot = () => {  /* chatbot open/close */
                 <h1 style={styles.welcomeTitle}>Hello there!</h1>
                 <p style={styles.welcomeSubtitle}>Chat with us</p>
 
-                <div style={styles.chatSection}>
-                  <div
-                    style={styles.helpdeskCard}
-                    onClick={() => setCurrentView("helpdesk")}
-                  >
-                    <div>
-                      <div style={styles.helpdeskName}>Lava Helpdesk</div>
-                    </div>
-                    <div style={styles.helpdeskTime}>3:14 PM</div>
-                  </div>
-                </div>
+                
 
                 <div style={styles.faqSection}>
                   <div style={styles.faqHeader}>
@@ -323,65 +313,8 @@ const LavaSupportChatbot = () => {  /* chatbot open/close */
             </div>
           )}
 
-          {currentView === "helpdesk" && (
-            <div style={styles.body}>
-              <div style={styles.helpdeskView}>
-                <div style={styles.helpdeskHeader}>
-                  <h3 style={styles.helpdeskHeaderText}>Submit Support Ticket</h3>
-                </div>
+         
 
-                <div style={styles.contactForm}>
-                  <input
-                    style={errors.fullName ? styles.inputError : styles.input}
-                    name="fullName"
-                    placeholder="Full Name *"
-                    value={ticketData.fullName}
-                    onChange={handleTicketChange}
-                  />
-                  {errors.fullName && <div style={styles.errorText}>{errors.fullName}</div>}
-
-                  <input
-                    style={errors.email ? styles.inputError : styles.input}
-                    name="email"
-                    type="email"
-                    placeholder="Registered Email *"
-                    value={ticketData.email}
-                    onChange={handleTicketChange}
-                  />
-                  {errors.email && <div style={styles.errorText}>{errors.email}</div>}
-
-                  <input
-                    style={errors.phone ? styles.inputError : styles.input}
-                    name="phone"
-                    placeholder="Phone Number"
-                    value={ticketData.phone}
-                    onChange={handleTicketChange}
-                  />
-                  {errors.phone && <div style={styles.errorText}>{errors.phone}</div>}
-
-                  <textarea
-                    style={errors.description ? styles.textareaError : styles.textarea}
-                    name="description"
-                    placeholder="Describe your issue *"
-                    value={ticketData.description}
-                    onChange={handleTicketChange}
-                  />
-                  {errors.description && <div style={styles.errorText}>{errors.description}</div>}
-
-                  <button style={styles.submitBtn} onClick={handleTicketSubmit}>
-                    Submit Ticket
-                  </button>
-
-                  <button
-                    style={styles.backToHomeBtn}
-                    onClick={() => setCurrentView("welcome")}
-                  >
-                    Back to Home
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {currentView === "thankYouFeedback" && (
             <div style={styles.body}>
@@ -610,25 +543,8 @@ const styles = {
     marginBottom: "20px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
   },
-  helpdeskCard: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    cursor: "pointer",
-    padding: "8px",
-    borderRadius: "8px",
-    transition: "background 0.2s",
-  },
-  helpdeskName: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#333",
-  },
-  helpdeskTime: {
-    fontSize: "11px",
-    color: "#999",
-    marginLeft: "auto",
-  },
+  
+  
   faqSection: {
     background: "white",
     borderRadius: "12px",
