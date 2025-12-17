@@ -130,25 +130,25 @@ const LavaSupportChatbot = () => {
   }, [isOpen, currentView]);
 
   const handleBack = () => {
-  if (currentView === "answer") {
-    setCurrentView("questionList");
-    setSelectedQuestion(null);
-    setAnswers([]);
-  } 
-  else if (currentView === "submitTicket") {
-    // 👈 FIX: back from submit ticket goes to thank you or welcome
-    setCurrentView("welcome");
-  }
-  else if (currentView === "helpdesk") {
-    setCurrentView("welcome");
-  }
-  else if (currentView === "questionList") {
-    setCurrentView("welcome");
-  }
-  else if (currentView === "thankYouFeedback") {
-    setCurrentView("welcome");
-  }
-};
+    if (currentView === "answer") {
+      setCurrentView("questionList");
+      setSelectedQuestion(null);
+      setAnswers([]);
+    }
+    else if (currentView === "submitTicket") {
+      // 👈 FIX: back from submit ticket goes to thank you or welcome
+      setCurrentView("welcome");
+    }
+    else if (currentView === "helpdesk") {
+      setCurrentView("welcome");
+    }
+    else if (currentView === "questionList") {
+      setCurrentView("welcome");
+    }
+    else if (currentView === "thankYouFeedback") {
+      setCurrentView("welcome");
+    }
+  };
 
 
   return (
@@ -364,7 +364,7 @@ const LavaSupportChatbot = () => {
                 </div>
               </div>
             </div>
-          
+
           )}
           {/* SUBMIT TICKET VIEW */}
           {currentView === "submitTicket" && (
@@ -466,30 +466,63 @@ const LavaSupportChatbot = () => {
                     </>
                   )}
 
-                  {/* 👎 DISLIKE CASE */}
+                  {/*  DISLIKE CASE */}
                   {feedbackType === "dislike" && (
                     <>
-                      <div style={styles.ticketIcon}>✍️</div>
+                      {/* <div style={styles.ticketIcon}>✍️</div> */}
                       <h3 style={styles.thankYouText}>
-                        Sorry this didn’t help
+                        Sorry this didn't help
                       </h3>
                       <p style={styles.feedbackMessage}>
-                        Please submit your query so we can assist you better.
+                        We appreciate your feedback. Please submit your query below so we can assist you better.
                       </p>
 
-                      <button
-                        style={styles.messageUsBtn}
-                        onClick={() => setCurrentView("submitTicket")}
-                      >
-                        Submit Your Query
-                      </button>
+                      {/* FORM DIRECTLY HERE */}
+                      <div style={styles.contactForm}>
+                        <input
+                          style={styles.input}
+                          name="fullName"
+                          placeholder="Full Name *"
+                          value={ticketData.fullName}
+                          onChange={handleTicketChange}
+                        />
 
-                      <button
-                        style={styles.backToHomeBtn}
-                        onClick={() => setCurrentView("welcome")}
-                      >
-                        Back to Home
-                      </button>
+                        <input
+                          style={styles.input}
+                          name="email"
+                          type="email"
+                          placeholder="Registered Email *"
+                          value={ticketData.email}
+                          onChange={handleTicketChange}
+                        />
+
+                        <input
+                          style={styles.input}
+                          name="phone"
+                          placeholder="Phone Number"
+                          value={ticketData.phone}
+                          onChange={handleTicketChange}
+                        />
+
+                        <textarea
+                          style={styles.textarea}
+                          name="description"
+                          placeholder="Describe your issue"
+                          value={ticketData.description}
+                          onChange={handleTicketChange}
+                        />
+
+                        <button style={styles.submitBtn} onClick={handleTicketSubmit}>
+                          Submit Ticket
+                        </button>
+
+                        <button
+                          style={styles.backToHomeBtn}
+                          onClick={() => setCurrentView("welcome")}
+                        >
+                          Back to Home
+                        </button>
+                      </div>
                     </>
                   )}
 
