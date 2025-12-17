@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown, ChevronLeft, X, MessageCircle } from "lucide-react";
 
 const BASE_URL = "http://192.168.114.60:8082";
-const TICKET_FORM_URL = "https://your-support-portal.com/submit-ticket"; // Replace with your actual URL
+const TICKET_FORM_URL = "https://your-support-portal.com/submit-ticket";
 
 const LavaSupportChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +10,6 @@ const LavaSupportChatbot = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  // const [viewHistory, setViewHistory] = useState([]);
 
   const [feedbackType, setFeedbackType] = useState(null);
   const [formData, setFormData] = useState({
@@ -41,7 +40,6 @@ const LavaSupportChatbot = () => {
       }));
       setQuestions(formattedData);
 
-      // Animate questions appearance
       setVisibleQuestions([]);
       formattedData.forEach((_, index) => {
         setTimeout(() => {
@@ -75,12 +73,14 @@ const LavaSupportChatbot = () => {
         body: JSON.stringify({
           questionId: selectedQuestion,
           wasHelpful,
-          contactNumber: null,
-          email: null,
-          queryText: null,
+          contactNumber: ticketData.phone || null,
+          email: ticketData.email || null,
+          queryText: ticketData.description || null,
+          ticket_no: null,
+          created_by: ticketData.fullName || null,
+          updated_by: null,
         }),
       });
-
 
       setFeedbackType(wasHelpful ? "like" : "dislike");
       setCurrentView("thankYouFeedback");
@@ -89,12 +89,13 @@ const LavaSupportChatbot = () => {
       console.error("Error submitting feedback:", error);
     }
   };
+
   const handleTicketChange = (e) => {
     setTicketData({ ...ticketData, [e.target.name]: e.target.value });
   };
 
   const handleTicketSubmit = () => {
-    if (!ticketData.fullName || !ticketData.email || !ticketData.subject) {
+    if (!ticketData.fullName || !ticketData.email || !ticketData.description) {
       alert("Please fill required fields");
       return;
     }
@@ -111,18 +112,6 @@ const LavaSupportChatbot = () => {
     setCurrentView("welcome");
   };
 
-
-
-  // const handleFormSubmit = () => {
-  //   if (!formData.name || !formData.email || !formData.message) {
-  //     alert("Please fill in all required fields");
-  //     return;
-  //   }
-  //   alert("Message sent successfully!");
-  //   setFormData({ name: "", email: "", phone: "", message: "" });
-  //   setCurrentView("welcome");
-  // };
-
   useEffect(() => {
     if (isOpen && currentView === "questionList") {
       fetchQuestions();
@@ -136,7 +125,6 @@ const LavaSupportChatbot = () => {
       setAnswers([]);
     }
     else if (currentView === "submitTicket") {
-      // 👈 FIX: back from submit ticket goes to thank you or welcome
       setCurrentView("welcome");
     }
     else if (currentView === "helpdesk") {
@@ -150,7 +138,6 @@ const LavaSupportChatbot = () => {
     }
   };
 
-
   return (
     <>
       <div style={styles.chatIcon} onClick={() => setIsOpen(true)}>
@@ -159,7 +146,6 @@ const LavaSupportChatbot = () => {
 
       {isOpen && (
         <div style={styles.chatbot}>
-          {/* HEADER */}
           <div style={styles.header}>
             {currentView !== "welcome" && (
               <button style={styles.backButton} onClick={handleBack}>
@@ -169,7 +155,6 @@ const LavaSupportChatbot = () => {
             <div style={styles.headerContent}>
               <div style={styles.logo}>
                 <span style={styles.logolava}>LAVA</span>
-
               </div>
             </div>
             <button style={styles.closeBtn} onClick={() => setIsOpen(false)}>
@@ -184,19 +169,21 @@ const LavaSupportChatbot = () => {
                 <p style={styles.welcomeSubtitle}>Chat with us</p>
 
                 <div style={styles.chatSection}>
-                  <p style={styles.chatTitle}>
-                    {/* <span onClick={() => setCurrentView("helpdesk")}>A</span> */}
-                  </p>
                   <div
                     style={styles.helpdeskCard}
                     onClick={() => setCurrentView("helpdesk")}
                   >
-
                     <div>
                       <div style={styles.helpdeskName}>Lava Helpdesk</div>
-
                     </div>
-                    <div style={styles.helpdeskTime}>3:14 PM</div>
+                    <div style={styles.helpdeskTime}> {/* timme */}
+                      {new Date().toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true
+                      })}
+                    </div>
+
                   </div>
                 </div>
 
@@ -227,7 +214,6 @@ const LavaSupportChatbot = () => {
                 <div style={styles.categoryHeader}>
                   <div style={styles.categoryIconSmall}>F</div>
                   <div>
-                    {/* <div style={styles.categoryLabel}>CATEGORY</div> */}
                     <div style={styles.categoryName}>Find answers to common questions</div>
                   </div>
                 </div>
@@ -255,7 +241,6 @@ const LavaSupportChatbot = () => {
             </div>
           )}
 
-          {/* ANSWER VIEW */}
           {currentView === "answer" && (
             <div style={styles.body}>
               <div style={styles.answerView}>
@@ -293,7 +278,6 @@ const LavaSupportChatbot = () => {
             </div>
           )}
 
-          {/* HELPDESK VIEW */}
           {currentView === "helpdesk" && (
             <div style={styles.body}>
               <div style={styles.helpdeskView}>
@@ -321,100 +305,11 @@ const LavaSupportChatbot = () => {
 
                   <input
                     style={styles.input}
-                    name="Phone Number"
-                    placeholder="Number"
+                    name="phone"
+                    placeholder="Phone Number"
                     value={ticketData.phone}
                     onChange={handleTicketChange}
                   />
-
-                  {/* <input
-                    style={styles.input}
-                    name="queryType"
-                    placeholder="Query Type"
-                    value={ticketData.queryType}
-                    onChange={handleTicketChange}
-                  /> */}
-
-                  {/* <input
-                    style={styles.input}
-                    name="subject"
-                    placeholder="Your Query *"
-                    value={ticketData.subject}
-                    onChange={handleTicketChange}
-                  /> */}
-
-                  <textarea
-                    style={styles.textarea}
-                    name="description"
-                    placeholder="Describe your issue"
-                    value={ticketData.description}
-                    onChange={handleTicketChange}
-                  />
-
-                  <button style={styles.submitBtn} onClick={handleTicketSubmit}>
-                    Submit Ticket
-                  </button>
-
-                  <button
-                    style={styles.backToHomeBtn}
-                    onClick={() => setCurrentView("welcome")}
-                  >
-                    Back to Home
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          )}
-          {/* SUBMIT TICKET VIEW */}
-          {currentView === "submitTicket" && (
-            <div style={styles.body}>
-              <div style={styles.helpdeskView}>
-                <div style={styles.helpdeskHeader}>
-                  <h3 style={styles.helpdeskHeaderText}>Submit Support Ticket</h3>
-                </div>
-
-                <div style={styles.contactForm}>
-                  <input
-                    style={styles.input}
-                    name="fullName"
-                    placeholder="Full Name *"
-                    value={ticketData.fullName}
-                    onChange={handleTicketChange}
-                  />
-
-                  <input
-                    style={styles.input}
-                    name="email"
-                    type="email"
-                    placeholder="Registered Email *"
-                    value={ticketData.email}
-                    onChange={handleTicketChange}
-                  />
-
-                  <input
-                    style={styles.input}
-                    name="Phone number"
-                    placeholder="Number"
-                    value={ticketData.phone}
-                    onChange={handleTicketChange}
-                  />
-
-                  {/* <input
-                    style={styles.input}
-                    name="queryType"
-                    placeholder="Query Type"
-                    value={ticketData.queryType}
-                    onChange={handleTicketChange}
-                  /> */}
-
-                  {/* <input
-                    style={styles.input}
-                    name="subject"
-                    placeholder="Your Query *"
-                    value={ticketData.subject}
-                    onChange={handleTicketChange}
-                  /> */}
 
                   <textarea
                     style={styles.textarea}
@@ -439,14 +334,10 @@ const LavaSupportChatbot = () => {
             </div>
           )}
 
-
-          {/* THANK YOU FEEDBACK VIEW */}
           {currentView === "thankYouFeedback" && (
             <div style={styles.body}>
               <div style={styles.feedbackView}>
                 <div style={styles.feedbackSuccess}>
-
-                  {/* 👍 LIKE CASE */}
                   {feedbackType === "like" && (
                     <>
                       <div style={styles.checkmark}>✓</div>
@@ -466,10 +357,8 @@ const LavaSupportChatbot = () => {
                     </>
                   )}
 
-                  {/* 👎 DISLIKE CASE */}
                   {feedbackType === "dislike" && (
                     <>
-                      <div style={styles.ticketIcon}>✍️</div>
                       <h3 style={styles.thankYouText}>
                         Sorry this didn't help
                       </h3>
@@ -477,7 +366,6 @@ const LavaSupportChatbot = () => {
                         We appreciate your feedback. Please submit your query below so we can assist you better.
                       </p>
 
-                      {/* FORM DIRECTLY HERE */}
                       <div style={styles.contactForm}>
                         <input
                           style={styles.input}
@@ -525,39 +413,6 @@ const LavaSupportChatbot = () => {
                       </div>
                     </>
                   )}
-
-                </div>
-              </div>
-            </div>
-          )}
-
-
-          {/* TICKET MESSAGE VIEW */}
-          {currentView === "ticketMessage" && (
-            <div style={styles.body}>
-              <div style={styles.feedbackView}>
-                <div style={styles.feedbackSuccess}>
-                  <div style={styles.ticketIcon}>🎫</div>
-                  <h3 style={styles.thankYouText}>Need More Help?</h3>
-                  <p style={styles.feedbackMessage}>
-                    For detailed assistance, please submit a support ticket through our help portal.
-                  </p>
-                  <a
-                    href={TICKET_FORM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.ticketLink}
-                  >
-                    <button style={styles.messageUsBtn}>
-                      🎫 Submit Support Ticket
-                    </button>
-                  </a>
-                  <button
-                    style={styles.backToHomeBtn}
-                    onClick={() => setCurrentView("welcome")}
-                  >
-                    Back to Home
-                  </button>
                 </div>
               </div>
             </div>
@@ -582,7 +437,7 @@ const styles = {
     justifyContent: "center",
     cursor: "pointer",
     zIndex: 9999,
-    boxShadow: "0 8px 24px rgba(233, 232, 212, 0.25)",
+    boxShadow: "0 8px 24px rgba(33, 150, 243, 0.25)",
     transition: "transform 0.2s",
   },
   chatbot: {
@@ -608,7 +463,12 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
     minHeight: "70px",
+
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
   },
+
   backButton: {
     background: "transparent",
     border: "none",
@@ -628,11 +488,6 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     lineHeight: "1",
-  },
-  logoLava: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#e40f3dff",
   },
   logolava: {
     fontSize: "20px",
@@ -681,12 +536,6 @@ const styles = {
     marginBottom: "20px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
   },
-  chatTitle: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "12px",
-  },
   helpdeskCard: {
     display: "flex",
     alignItems: "center",
@@ -696,26 +545,10 @@ const styles = {
     borderRadius: "8px",
     transition: "background 0.2s",
   },
-  helpdeskIcon: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    color: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "18px",
-    fontWeight: "bold",
-  },
   helpdeskName: {
     fontSize: "14px",
     fontWeight: "600",
     color: "#333",
-  },
-  helpdeskStatus: {
-    fontSize: "12px",
-    color: "#666",
   },
   helpdeskTime: {
     fontSize: "11px",
@@ -744,7 +577,7 @@ const styles = {
     alignItems: "center",
     gap: "12px",
     padding: "12px",
-    background: "#fff9e6",
+    background: "#E3F2FD",
     borderRadius: "8px",
     cursor: "pointer",
     transition: "background 0.2s",
@@ -797,12 +630,6 @@ const styles = {
     justifyContent: "center",
     fontSize: "16px",
     fontWeight: "bold",
-  },
-  categoryLabel: {
-    fontSize: "10px",
-    color: "#999",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
   },
   categoryName: {
     fontSize: "14px",
@@ -865,16 +692,24 @@ const styles = {
     lineHeight: "1.6",
   },
   feedbackSection: {
-    borderTop: "1px solid #e0e0e0",
-    paddingTop: "20px",
-    textAlign: "center",
-  },
+  position: "sticky",
+  bottom: "0",
+  background: "white",
+  paddingTop: "12px",
+  paddingBottom: "12px",
+  borderTop: "1px solid #e0e0e0",
+  textAlign: "center",
+  zIndex: 999,
+},
+
   feedbackQuestion: {
-    fontSize: "14px",
-    color: "#333",
-    marginBottom: "12px",
-    fontWeight: "500",
-  },
+  fontSize: "14px",
+  color: "#333",
+  marginBottom: "8px",
+  marginTop: "-6px",   // 👈 lifts it up
+  fontWeight: "500",
+},
+
   feedbackButtons: {
     display: "flex",
     justifyContent: "center",
@@ -903,18 +738,6 @@ const styles = {
     fontSize: "16px",
     fontWeight: "600",
     color: "#333",
-  },
-  messageBox: {
-    background: "#f0f4ff",
-    padding: "16px",
-    borderRadius: "12px",
-    marginBottom: "24px",
-  },
-  messageText: {
-    fontSize: "14px",
-    color: "#555",
-    lineHeight: "1.6",
-    margin: 0,
   },
   contactForm: {
     display: "flex",
@@ -976,18 +799,29 @@ const styles = {
     justifyContent: "center",
     margin: "0 auto 20px",
   },
-  ticketIcon: {
-    width: "60px",
-    height: "60px",
-    borderRadius: "50%",
-    background: "#2196F3",
-    color: "white",
-    fontSize: "32px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0 auto 20px",
+  thankYouText: {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: "8px",
+  },
+  feedbackMessage: {
+    fontSize: "13px",
+    color: "#666",
+    lineHeight: "1.5",
+    marginBottom: "16px",
+  },
+  backToHomeBtn: {
+    background: "transparent",
+    color: "#2196F3",
+    border: "2px solid #2196F3",
+    borderRadius: "8px",
+    padding: "12px 24px",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    width: "100%",
   },
 };
 
-  export default LavaSupportChatbot;
+export default LavaSupportChatbot;
