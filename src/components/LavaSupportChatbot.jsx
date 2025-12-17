@@ -259,21 +259,17 @@ const LavaSupportChatbot = () => {
                 </div>
                 <div style={styles.feedbackSection}>
                   <p style={styles.feedbackQuestion}>Was this article useful?</p>
+
                   <div style={styles.feedbackButtons}>
-                    <button
-                      style={styles.feedbackBtn}
-                      onClick={() => submitFeedback(true)}
-                    >
+                    <button style={styles.feedbackBtn} onClick={() => submitFeedback(true)}>
                       <ThumbsUp size={20} />
                     </button>
-                    <button
-                      style={styles.feedbackBtn}
-                      onClick={() => submitFeedback(false)}
-                    >
+                    <button style={styles.feedbackBtn} onClick={() => submitFeedback(false)}>
                       <ThumbsDown size={20} />
                     </button>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
@@ -695,26 +691,30 @@ const styles = {
   position: "sticky",
   bottom: "0",
   background: "white",
-  paddingTop: "12px",
-  paddingBottom: "12px",
+  paddingTop: "16px",   
+  paddingBottom: "16px",
   borderTop: "1px solid #e0e0e0",
   textAlign: "center",
   zIndex: 999,
 },
 
+
   feedbackQuestion: {
-  fontSize: "14px",
-  color: "#333",
-  marginBottom: "8px",
-  marginTop: "-6px",   // 👈 lifts it up
-  fontWeight: "500",
-},
+    fontSize: "14px",
+    color: "#333",
+    marginBottom: "10px",
+    marginTop: "8px",   
+    fontWeight: "500",
+  },
+
 
   feedbackButtons: {
     display: "flex",
     justifyContent: "center",
     gap: "16px",
+    marginTop: "8px",   
   },
+
   feedbackBtn: {
     background: "white",
     border: "2px solid #e0e0e0",
