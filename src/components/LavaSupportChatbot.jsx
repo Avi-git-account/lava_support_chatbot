@@ -454,7 +454,7 @@ const LavaSupportChatbot = () => {
                         Thank you for your Feedback!
                       </h3>
                       <p style={styles.feedbackMessage}>
-                        We’re glad this information was helpful 😊
+                        We're glad this information was helpful 😊
                       </p>
 
                       <button
@@ -466,10 +466,10 @@ const LavaSupportChatbot = () => {
                     </>
                   )}
 
-                  {/*  DISLIKE CASE */}
+                  {/* 👎 DISLIKE CASE */}
                   {feedbackType === "dislike" && (
                     <>
-                      {/* <div style={styles.ticketIcon}>✍️</div> */}
+                      <div style={styles.ticketIcon}>✍️</div>
                       <h3 style={styles.thankYouText}>
                         Sorry this didn't help
                       </h3>
@@ -576,7 +576,7 @@ const styles = {
     width: "60px",
     height: "60px",
     borderRadius: "50%",
-    background: "linear-gradient(135deg, #daadd0ff 0%, #764ba2 100%)",
+    background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -601,7 +601,7 @@ const styles = {
     flexDirection: "column",
   },
   header: {
-    background: "linear-gradient(135deg, #dfabdaff 0%, #ebb4e3ff 100%)",
+    background: "linear-gradient(135deg, #2196F3 0%, #42A5F5 100%)",
     color: "#fff",
     padding: "16px",
     display: "flex",
@@ -635,9 +635,10 @@ const styles = {
     color: "#e40f3dff",
   },
   logolava: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#FFA500",
+    fontSize: "20px",
+    fontWeight: "900",
+    color: "#FFF",
+    letterSpacing: "1px",
   },
   closeBtn: {
     background: "rgba(255,255,255,0.2)",
@@ -659,7 +660,7 @@ const styles = {
   },
   welcomeView: {
     padding: "24px",
-    background: "linear-gradient(180deg, #4a5dc9 0%, #4a5dc9 45%, #f8f9fa 45%)",
+    background: "linear-gradient(180deg, #1976D2 0%, #1976D2 45%, #f8f9fa 45%)",
     minHeight: "100%",
   },
   welcomeTitle: {
@@ -752,7 +753,7 @@ const styles = {
     width: "36px",
     height: "36px",
     borderRadius: "50%",
-    background: "#eea719ff",
+    background: "#2196F3",
     color: "white",
     display: "flex",
     alignItems: "center",
@@ -789,7 +790,7 @@ const styles = {
     width: "40px",
     height: "40px",
     borderRadius: "50%",
-    background: "#FFA500",
+    background: "#2196F3",
     color: "white",
     display: "flex",
     alignItems: "center",
@@ -918,10 +919,11 @@ const styles = {
   contactForm: {
     display: "flex",
     flexDirection: "column",
-    gap: "12px",
+    gap: "10px",
+    flex: 1,
   },
   input: {
-    padding: "12px",
+    padding: "10px",
     border: "1px solid #e0e0e0",
     borderRadius: "8px",
     fontSize: "14px",
@@ -929,17 +931,17 @@ const styles = {
     transition: "border-color 0.2s",
   },
   textarea: {
-    padding: "12px",
+    padding: "10px",
     border: "1px solid #e0e0e0",
     borderRadius: "8px",
     fontSize: "14px",
     outline: "none",
-    minHeight: "100px",
+    minHeight: "70px",
     resize: "vertical",
     fontFamily: "inherit",
   },
   submitBtn: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
     color: "white",
     border: "none",
     borderRadius: "8px",
@@ -947,24 +949,26 @@ const styles = {
     fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "8px",
+    marginTop: "4px",
   },
   feedbackView: {
-    padding: "40px 20px",
+    padding: "20px",
     minHeight: "100%",
     background: "white",
     display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "column",
   },
   feedbackSuccess: {
     textAlign: "center",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
   },
   checkmark: {
     width: "60px",
     height: "60px",
     borderRadius: "50%",
-    background: "#f5a613ff",
+    background: "#4CAF50",
     color: "white",
     fontSize: "32px",
     display: "flex",
@@ -976,7 +980,7 @@ const styles = {
     width: "60px",
     height: "60px",
     borderRadius: "50%",
-    background: "#667eea",
+    background: "#2196F3",
     color: "white",
     fontSize: "32px",
     display: "flex",
@@ -984,45 +988,6 @@ const styles = {
     justifyContent: "center",
     margin: "0 auto 20px",
   },
-  thankYouText: {
-    fontSize: "20px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "12px",
-  },
-  feedbackMessage: {
-    fontSize: "14px",
-    color: "#666",
-    lineHeight: "1.6",
-    marginBottom: "24px",
-  },
-  messageUsBtn: {
-    background: "#4a5470ff",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    padding: "12px 24px",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-    width: "100%",
-    marginBottom: "12px",
-  },
-  backToHomeBtn: {
-    background: "transparent",
-    color: "#a1aadbff",
-    border: "2px solid #dfe1ecff",
-    borderRadius: "8px",
-    padding: "12px 24px",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-    width: "100%",
-  },
-  ticketLink: {
-    textDecoration: "none",
-    width: "100%",
-  },
 };
 
-export default LavaSupportChatbot;
+  export default LavaSupportChatbot;
