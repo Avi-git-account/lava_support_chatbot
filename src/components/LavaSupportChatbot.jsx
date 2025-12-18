@@ -3,7 +3,7 @@ import { ThumbsUp, ThumbsDown, ChevronLeft, X, MessageCircle } from "lucide-reac
 
 const BASE_URL = "http://192.168.114.60:8082";
 
-// Categories mapping based on question content
+
 const CATEGORIES = {
   power: {
     id: "power",
@@ -50,7 +50,7 @@ const LavaSupportChatbot = () => {
     fullName: "",
     email: "",
     phone: "",
-    description: ""
+    queryText: ""
   });
   const [visibleQuestions, setVisibleQuestions] = useState([]);
 
@@ -66,7 +66,7 @@ const LavaSupportChatbot = () => {
       }
     }
 
-    return "settings"; // default category
+    return "settings";
   };
 
   const fetchQuestions = async () => {
@@ -112,31 +112,35 @@ const LavaSupportChatbot = () => {
   };
 
   const submitFeedback = async (wasHelpful) => {
-    console.log('12233');
-    
+    if (!wasHelpful) {
+      setFeedbackType("dislike");
+      setCurrentView("thankYouFeedback");
+      return;
+    }
+
+
     try {
       await fetch(`${BASE_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: JSON.stringify({         /* finalchnge at 13.12 */
           questionId: selectedQuestion,
-          wasHelpful: wasHelpful || false,
-          contactNumber: ticketData.phone || null,
-          email: ticketData.email || null,
-          queryText: ticketData.description || null,
+          wasHelpful: true,
+          contactNumber: null,
+          email: null,
+          queryText: null,
           ticket_no: null,
-          created_by: ticketData.fullName || null,
+          created_by: null,
           updated_by: null,
         }),
       });
 
-      setFeedbackType(wasHelpful ? "like" : "dislike");
+      setFeedbackType("like");
       setCurrentView("thankYouFeedback");
     } catch (error) {
       console.error("Error submitting feedback:", error);
     }
   };
-
   const handleTicketChange = (e) => {
     const { name, value } = e.target;
     let newErrors = { ...errors };
@@ -158,11 +162,11 @@ const LavaSupportChatbot = () => {
       else delete newErrors.fullName;
     }
 
-    if (name === "description") {
-      if (!value.trim()) newErrors.description = "Description is required";
+    if (name === "queryText") {
+      if (!value.trim()) newErrors.queryText = "Query is required";
       else if (value.length > 250)
-        newErrors.description = "Max 250 characters allowed";
-      else delete newErrors.description;
+        newErrors.queryText = "Max 250 characters allowed";
+      else delete newErrors.queryText;
     }
 
     setErrors(newErrors);
@@ -183,15 +187,10 @@ const LavaSupportChatbot = () => {
     if (ticketData.phone && !validatePhone(ticketData.phone))
       newErrors.phone = "Enter valid 10-digit phone number";
 
-    if (!ticketData.description.trim())
-      newErrors.description = "Description is required";
-    else if (ticketData.description.length > 250)
-      newErrors.description = "Max 250 characters allowed";
-
-    if (!ticketData.description.trim())
-      newErrors.description = "Description is required";
-    else if (ticketData.description.length > 250)
-      newErrors.description = "Max 250 characters allowed";
+    if (!ticketData.queryText.trim())
+      newErrors.queryText = "Query is required";
+    else if (ticketData.queryText.length > 250)
+      newErrors.queryText = "Max 250 characters allowed";
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -202,7 +201,16 @@ const LavaSupportChatbot = () => {
       const res = await fetch(`${BASE_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(ticketData)
+        body: JSON.stringify({
+          questionId: selectedQuestion,
+          wasHelpful: false,
+          contactNumber: ticketData.phone || null,
+          email: ticketData.email || null,
+          queryText: ticketData.queryText || null,
+          ticket_no: null,
+          created_by: ticketData.fullName || null,
+          updated_by: null,
+        })
       });
 
       const data = await res.json();
@@ -212,7 +220,7 @@ const LavaSupportChatbot = () => {
         fullName: "",
         email: "",
         phone: "",
-        description: ""
+        queryText: ""
       });
       setErrors({});
     } catch (error) {
@@ -240,11 +248,21 @@ const LavaSupportChatbot = () => {
     else if (currentView === "categoryList") {
       setCurrentView("welcome");
     }
-    else if (currentView === "submitTicket" || currentView === "thankYouFeedback") {
+    else if (currentView === "submitTicket" || currentView === "thankYouFeedback" || currentView === "ticketSuccess") {
       setCurrentView("welcome");
+      setGeneratedTicketNo(null);
+      setFeedbackType(null);
+      setSelectedQuestion(null);
+      setAnswers([]);
+      setTicketData({
+        fullName: "",
+        email: "",
+        phone: "",
+        queryText: ""
+      });
+      setErrors({});
     }
   };
-
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
     setCurrentView("questionList");
@@ -258,6 +276,21 @@ const LavaSupportChatbot = () => {
       }, index * 150);
     });
   };
+
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
 
   return (
     <>
@@ -305,7 +338,9 @@ const LavaSupportChatbot = () => {
                   </div>
                 </div>
 
-                <p style={styles.footerText}>Welcome to LAVA Support</p>
+                <div style={{ marginTop: "200px" }}>
+                  <p style={styles.footerText}>Welcome to LAVA Support</p>
+                </div>
               </div>
             </div>
           )}
@@ -313,22 +348,30 @@ const LavaSupportChatbot = () => {
           {currentView === "categoryList" && (
             <div style={styles.body}>
               <div style={styles.categoryListView}>
+                <div style={styles.faqHeaderSection}>
+                  <h2 style={styles.faqMainTitle}>Frequently asked questions</h2>
+                  <div style={styles.searchIconContainer}>🔍</div>
+                </div>
                 <h2 style={styles.categoryListTitle}>Select a Category</h2>
                 <div style={styles.categoriesGrid}>
-                  {Object.entries(CATEGORIES).map(([key, category]) => {
+                  {Object.entries(CATEGORIES).map(([key, category], idx) => {
                     const count = (categorizedQuestions[key] || []).length;
                     if (count === 0) return null;
 
                     return (
                       <div
                         key={key}
-                        style={styles.categoryCard}
+                        style={{
+                          ...styles.categoryBubble,
+                          animationDelay: `${idx * 0.15}s`
+                        }}
                         onClick={() => handleCategorySelect(key)}
                       >
-                        <div style={styles.categoryIconLarge}>{category.icon}</div>
-                        <div style={styles.categoryName}>{category.name}</div>
-                      </div>
+                        <div style={styles.categoryBubbleContent}>
 
+                          <span style={styles.categoryBubbleText}>{category.name}</span>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -375,23 +418,25 @@ const LavaSupportChatbot = () => {
 
           {currentView === "answer" && (
             <div style={styles.body}>
-              <div style={styles.answerView}>
-                <div style={styles.answerHeader}>
-                  <div style={styles.answerCategory}>
-                    {selectedCategory && CATEGORIES[selectedCategory].name}
+              <div style={styles.answerViewWrapper}>
+                <div style={styles.answerScrollable}>
+                  <div style={styles.answerHeader}>
+                    <div style={styles.answerCategory}>
+                      {selectedCategory && CATEGORIES[selectedCategory].name}
+                    </div>
+                  </div>
+                  <h2 style={styles.answerQuestion}>
+                    {questions.find(q => q.id === selectedQuestion)?.question}
+                  </h2>
+                  <div style={styles.answerContent}>
+                    {answers.map((a, i) => (
+                      <div key={i} style={styles.answerSection}>
+                        <p style={styles.answerText}>{a[2]}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <h2 style={styles.answerQuestion}>
-                  {questions.find(q => q.id === selectedQuestion)?.question}
-                </h2>
-                <div style={styles.answerContent}>
-                  {answers.map((a, i) => (
-                    <div key={i} style={styles.answerSection}>
-                      <p style={styles.answerText}>{a[2]}</p>
-                    </div>
-                  ))}
-                </div>
-                <div style={styles.feedbackSection}>
+                <div style={styles.feedbackSectionFixed}>
                   <p style={styles.feedbackQuestion}>Was this article useful?</p>
                   <div style={styles.feedbackButtons}>
                     <button
@@ -411,7 +456,6 @@ const LavaSupportChatbot = () => {
               </div>
             </div>
           )}
-
           {currentView === "thankYouFeedback" && (
             <div style={styles.body}>
               <div style={styles.feedbackView}>
@@ -474,24 +518,31 @@ const LavaSupportChatbot = () => {
                         {errors.phone && <div style={styles.errorText}>{errors.phone}</div>}
 
                         <textarea
-                          style={errors.description ? styles.textareaError : styles.textarea}
-                          name="description"
+                          style={errors.queryText ? styles.textareaError : styles.textarea}
+                          name="queryText"
                           placeholder="Describe your issue *"
-                          value={ticketData.description}
+                          value={ticketData.queryText}
                           onChange={handleTicketChange}
                         />
-                        {errors.description && <div style={styles.errorText}>{errors.description}</div>}
-
+                        {errors.queryText && <div style={styles.errorText}>{errors.queryText}</div>}
                         <button style={styles.submitBtn} onClick={handleTicketSubmit}>
                           Submit Ticket
                         </button>
 
                         <button
                           style={styles.backToHomeBtn}
-                          onClick={() => setCurrentView("welcome")}
+                          onClick={() => {
+                            setCurrentView("welcome");
+                            setGeneratedTicketNo(null);
+                            setFeedbackType(null);
+                            setSelectedQuestion(null);
+                            setAnswers([]);
+                          }}
                         >
                           Back to Home
                         </button>
+
+
                       </div>
                     </>
                   )}
@@ -511,7 +562,20 @@ const LavaSupportChatbot = () => {
 
                   <button
                     style={styles.backToHomeBtn}
-                    onClick={() => setCurrentView("welcome")}
+                    onClick={() => {
+                      setCurrentView("welcome");
+                      setGeneratedTicketNo(null);
+                      setFeedbackType(null);
+                      setSelectedQuestion(null);
+                      setAnswers([]);
+                      setTicketData({
+                        fullName: "",
+                        email: "",
+                        phone: "",
+                        queryText: ""
+                      });
+                      setErrors({});
+                    }}
                   >
                     Back to Home
                   </button>
@@ -587,7 +651,7 @@ const styles = {
     lineHeight: "1",
   },
   logolava: {
-    fontSize: "20px",
+    fontSize: "22px",
     fontWeight: "900",
     color: "#FFF",
     letterSpacing: "1px",
@@ -674,7 +738,8 @@ const styles = {
     textAlign: "center",
     fontSize: "12px",
     color: "#666",
-    marginTop: "24px",
+    marginTop: "40px",
+    fontWeight: "bold",
   },
   categoryListView: {
     padding: "20px",
@@ -687,33 +752,18 @@ const styles = {
     marginBottom: "16px",
   },
   categoriesGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "12px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
-  categoryCard: {
-    background: "white",
-    borderRadius: "12px",
-    padding: "20px",
-    textAlign: "center",
-    cursor: "pointer",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-    transition: "transform 0.2s, box-shadow 0.2s",
-  },
-  categoryIconLarge: {
-    fontSize: "32px",
-    marginBottom: "12px",
-  },
+
   categoryName: {
     fontSize: "14px",
     fontWeight: "600",
     color: "#333",
     marginBottom: "4px",
   },
-  categoryCount: {
-    fontSize: "12px",
-    color: "#666",
-  },
+
   questionListView: {
     padding: "20px",
     minHeight: "100%",
@@ -763,11 +813,7 @@ const styles = {
     color: "#333",
     lineHeight: "1.5",
   },
-  answerView: {
-    padding: "20px",
-    minHeight: "100%",
-    background: "white",
-  },
+
   answerHeader: {
     marginBottom: "16px",
   },
@@ -794,11 +840,7 @@ const styles = {
     lineHeight: "1.6",
     whiteSpace: "pre-wrap",
   },
-  feedbackSection: {
-    borderTop: "1px solid #e0e0e0",
-    paddingTop: "20px",
-    textAlign: "center",
-  },
+
   feedbackQuestion: {
     fontSize: "14px",
     color: "#333",
@@ -927,6 +969,68 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
     width: "100%",
+  },
+  faqHeaderSection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "16px",
+    padding: "12px",
+    background: "white",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  },
+  faqMainTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#2196F3",
+    margin: 0,
+  },
+  searchIconContainer: {
+    fontSize: "18px",
+  },
+  categoryBubble: {
+    background: "linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)",
+    borderRadius: "20px",
+    padding: "16px 20px",
+    cursor: "pointer",
+    boxShadow: "0 3px 10px rgba(33, 150, 243, 0.15)",
+    transition: "all 0.3s ease",
+    animation: "slideInUp 0.5s ease forwards",
+    opacity: 0,
+    transform: "translateY(20px)",
+  },
+  categoryBubbleContent: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+  categoryEmoji: {
+    fontSize: "24px",
+  },
+  categoryBubbleText: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#1976D2",
+    flex: 1,
+  },
+  answerViewWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    background: "white",
+  },
+  answerScrollable: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "20px",
+    paddingBottom: "10px",
+  },
+  feedbackSectionFixed: {
+    borderTop: "1px solid #e0e0e0",
+    padding: "16px 20px",
+    background: "white",
+    textAlign: "center",
   },
 };
 
