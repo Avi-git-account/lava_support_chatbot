@@ -112,13 +112,15 @@ const LavaSupportChatbot = () => {
   };
 
   const submitFeedback = async (wasHelpful) => {
+    console.log('12233');
+    
     try {
       await fetch(`${BASE_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           questionId: selectedQuestion,
-          wasHelpful,
+          wasHelpful: wasHelpful || false,
           contactNumber: ticketData.phone || null,
           email: ticketData.email || null,
           queryText: ticketData.description || null,
@@ -186,11 +188,18 @@ const LavaSupportChatbot = () => {
     else if (ticketData.description.length > 250)
       newErrors.description = "Max 250 characters allowed";
 
+    if (!ticketData.description.trim())
+      newErrors.description = "Description is required";
+    else if (ticketData.description.length > 250)
+      newErrors.description = "Max 250 characters allowed";
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+    ticketData.wasHelpful = false;
+
     try {
-      const res = await fetch(`${BASE_URL}/api/tickets`, {
+      const res = await fetch(`${BASE_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(ticketData)
