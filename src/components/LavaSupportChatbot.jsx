@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown, ChevronLeft, X, MessageCircle } from "lucide-react";
 
 const BASE_URL = "http://192.168.114.60:8082";
+const OTHER_QUESTION_ID = 0;
+
 
 
 const CATEGORIES = {
@@ -33,12 +35,12 @@ const CATEGORIES = {
 
     keywords: ["talkback", "call recording", "fingerprint", "applock", "anti-theft", "screen cast", "assistant", "edge light"]
   },
-  other: {
-    id: "other",
-    name: "Other",
+  // other: {
+  //   id: "other",
+  //   name: "Other",
 
-    keywords: ["other"]
-  }
+  //   keywords: ["other"]
+  // }
 };
 
 const LavaSupportChatbot = () => {
@@ -131,7 +133,7 @@ const LavaSupportChatbot = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({         /* finalchnge at 13.12 */
-          questionId: selectedQuestion,
+          questionId: selectedQuestion ?? OTHER_QUESTION_ID,
           wasHelpful: true,
           contactNumber: null,
           email: null,
@@ -209,7 +211,7 @@ const LavaSupportChatbot = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          questionId: selectedQuestion,
+          questionId: selectedQuestion ?? OTHER_QUESTION_ID,
           wasHelpful: false,
           contactNumber: ticketData.phone || null,
           email: ticketData.email || null,
@@ -364,7 +366,9 @@ const LavaSupportChatbot = () => {
                 <div style={styles.categoriesGrid}>
                   {Object.entries(CATEGORIES).map(([key, category], idx) => {
                     const count = (categorizedQuestions[key] || []).length;
-                    if (count === 0) return null;
+
+                    // allow "other" even if count = 0
+                    if (count === 0 && key !== "other") return null;
 
                     return (
                       <div
@@ -373,15 +377,43 @@ const LavaSupportChatbot = () => {
                           ...styles.categoryBubble,
                           animationDelay: `${idx * 0.15}s`
                         }}
-                        onClick={() => handleCategorySelect(key)}
+                        onClick={() => {
+                          if (key === "other") {
+                            setFeedbackType("dislike");
+                            setCurrentView("thankYouFeedback");
+                          } else {
+                            handleCategorySelect(key);
+                          }
+                        }}
                       >
                         <div style={styles.categoryBubbleContent}>
-
-                          <span style={styles.categoryBubbleText}>{category.name}</span>
+                          <span style={styles.categoryBubbleText}>
+                            {category.name}
+                          </span>
                         </div>
                       </div>
                     );
                   })}
+
+                  {/* OTHER CATEGORY */}
+                  <div
+                    style={{
+                      ...styles.categoryBubble,
+                      opacity: 1,                 // 🔥 IMPORTANT
+                      transform: "translateY(0)", // 🔥 IMPORTANT
+                      animation: "none"            // 🔥 IMPORTANT
+                    }}
+                    onClick={() => {
+                      setSelectedQuestion(OTHER_QUESTION_ID);
+                      setFeedbackType("dislike");
+                      setCurrentView("thankYouFeedback");
+                    }}
+                  >
+                    <div style={styles.categoryBubbleContent}>
+                      <span style={styles.categoryBubbleText}>Other</span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -1043,6 +1075,8 @@ const styles = {
     background: "white",
     textAlign: "center",
   },
+
+
 };
 
 export default LavaSupportChatbot;
